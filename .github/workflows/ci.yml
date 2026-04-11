@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend – lint, build, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: cd backend && npm ci
+      - run: cd backend && npm run lint
+      - run: cd backend && npm run build
+      - run: cd backend && npm test
+
+  frontend:
+    name: Frontend – lint, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: cd frontend && npm ci
+      - run: cd frontend && npm run lint
+      - run: cd frontend && npm run build
+
+  rust:
+    name: Rust – check, clippy, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            anchor-client
+            cli
+      - name: Check anchor-client
+        run: cd anchor-client && cargo check
+      - name: Clippy anchor-client
+        run: cd anchor-client && cargo clippy -- -D warnings
+      - name: Test anchor-client
+        run: cd anchor-client && cargo test
+      - name: Check cli
+        run: cd cli && cargo check
+      - name: Clippy cli
+        run: cd cli && cargo clippy -- -D warnings
+
+  terraform:
+    name: Terraform – validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~1.6"
+      - name: Terraform init (no backend)
+        run: cd infra && terraform init -backend=false
+      - name: Terraform validate
+        run: cd infra && terraform validate
