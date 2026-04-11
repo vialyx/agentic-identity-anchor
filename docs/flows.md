@@ -136,6 +136,11 @@ Anchor (current)            OS              Anchor (new)
   │    /opt/anchor/anchor.new│                   │
   │    (chmod 0500)          │                   │
   │                          │                   │
+  │ 2a. Back up current      │                   │
+  │    binary:               │                   │
+  │    cp anchor → anchor.prev│                  │
+  │    (retained for 24h)    │                   │
+  │                          │                   │
   │ 3. Write updater script  │                   │
   │    (systemd oneshot, or  │                   │
   │     launchd plist, or    │                   │

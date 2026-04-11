@@ -24,7 +24,7 @@ const ListAgentsQuerySchema = z.object({
 
 const PublishVersionSchema = z.object({
   agentId: z.string().min(1).max(64),
-  version: z.string().regex(/^\d+\.\d+\.\d+$/, 'Must be semver x.y.z'),
+  version: z.string().regex(/^\d+\.\d+\.\d+(-[\w.]+)?(\+[\w.]+)?$/, 'Must be valid semver (e.g. 1.2.3 or 1.2.3-beta.1)'),
   platform: z.enum(['linux', 'macos', 'windows']),
   arch: z.enum(['amd64', 'arm64']),
   sha256: z.string().regex(/^[0-9a-fA-F]{64}$/, 'Must be 64-char hex SHA-256'),

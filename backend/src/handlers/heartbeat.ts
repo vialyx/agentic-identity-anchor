@@ -12,6 +12,8 @@ const HEALTH_QUEUE_URL = process.env['HEALTH_QUEUE_URL'] ?? '';
 const MAX_TIMESTAMP_SKEW_SECONDS = 300;
 /** Maximum nonces retained per device for replay detection. */
 const MAX_NONCE_HISTORY = 200;
+/** Device record TTL in days — matches default tenant retentionDays setting. */
+const DEVICE_TTL_DAYS = 90;
 
 // ─── Input validation schema ──────────────────────────────────────────────────
 
@@ -148,7 +150,7 @@ export const handler = async (
     const expressionValues: Record<string, unknown> = {
       ':now': now,
       ':av': agentVersions,
-      ':ttl': nowEpoch + 90 * 24 * 60 * 60, // 90-day TTL
+      ':ttl': nowEpoch + DEVICE_TTL_DAYS * 24 * 60 * 60,
       ':nonces': updatedNonces,
     };
     if (systemInfo) {

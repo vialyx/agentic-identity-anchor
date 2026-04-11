@@ -164,8 +164,8 @@ All tables use on-demand (pay-per-request) billing mode. Point-in-time recovery 
 
 ### Notes
 
-- The sort key `version` sorts lexicographically; for proper semver ordering, callers should fetch the full list and sort client-side, or use `publishedAt`.
-- Multiple items may share the same `agentId+version` for different `platform/arch` combos; the true composite key is `agentId + version + platform + arch` but DynamoDB requires uniqueness on PK+SK. In practice, separate items are stored with `version` encoded as `<semver>#<platform>#<arch>` in the SK.
+- The DynamoDB sort key for this table is a **composite string**: `<semver>#<platform>#<arch>` (e.g., `1.4.2#linux#amd64`). This composite key uniquely identifies a single binary artifact. The `version` field in the `AgentVersion` TypeScript interface reflects this composite form. Application code must split on `#` to extract the semver portion.
+- For semver-order sorting, callers should fetch the full list for an agentId and sort client-side by `publishedAt`, or parse and compare the semver component from the composite SK.
 
 ---
 

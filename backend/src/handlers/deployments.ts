@@ -11,7 +11,7 @@ const CreateDeploymentSchema = z.object({
   tenantId: z.string().uuid(),
   groupId: z.string().uuid(),
   agentId: z.string().min(1).max(64),
-  targetVersion: z.string().regex(/^\d+\.\d+\.\d+/, 'Must start with semver x.y.z'),
+  targetVersion: z.string().regex(/^\d+\.\d+\.\d+(-[\w.]+)?(\+[\w.]+)?$/, 'Must be valid semver (e.g. 1.2.3 or 1.2.3-beta.1)'),
   strategy: z.enum(['immediate', 'canary', 'scheduled']),
   canaryPercent: z.number().int().min(1).max(100).optional(),
   scheduledAt: z.string().datetime({ offset: true }).optional(),
