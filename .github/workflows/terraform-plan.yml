@@ -21,6 +21,8 @@ jobs:
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "~1.6"
+      - name: Terraform fmt check
+        run: cd infra && terraform fmt -check -recursive
       - name: Terraform Init
         id: init
         run: cd infra && terraform init

@@ -20,10 +20,10 @@ jobs:
       - run: cd backend && npm ci
       - run: cd backend && npm run lint
       - run: cd backend && npm run build
-      - run: cd backend && npm test
+      - run: cd backend && npm test -- --runInBand
 
   frontend:
-    name: Frontend – lint, build
+    name: Frontend – lint, test, build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,42 +34,49 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: cd frontend && npm ci
       - run: cd frontend && npm run lint
+      - run: cd frontend && npm test
       - run: cd frontend && npm run build
 
   rust:
-    name: Rust – check, clippy, test
+    name: Rust – fmt, check, clippy, test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
-          components: clippy
+          components: clippy,rustfmt
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: |
             anchor-client
             cli
+      - name: Fmt anchor-client
+        run: cd anchor-client && cargo fmt --all -- --check
       - name: Check anchor-client
         run: cd anchor-client && cargo check
       - name: Clippy anchor-client
-        run: cd anchor-client && cargo clippy -- -D warnings
+        run: cd anchor-client && cargo clippy --all-targets --all-features -- -D warnings
       - name: Test anchor-client
         run: cd anchor-client && cargo test
+      - name: Fmt cli
+        run: cd cli && cargo fmt --all -- --check
       - name: Check cli
         run: cd cli && cargo check
       - name: Clippy cli
-        run: cd cli && cargo clippy -- -D warnings
+        run: cd cli && cargo clippy --all-targets --all-features -- -D warnings
       - name: Test cli
         run: cd cli && cargo test
 
   terraform:
-    name: Terraform – validate
+    name: Terraform – fmt, validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "~1.6"
+      - name: Terraform fmt check
+        run: cd infra && terraform fmt -check -recursive
       - name: Terraform init (no backend)
         run: cd infra && terraform init -backend=false
       - name: Terraform validate
