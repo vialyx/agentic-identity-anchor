@@ -42,7 +42,6 @@ jobs:
         run: cd ${{ matrix.project }} && npm ci
       - name: Audit dependencies
         run: cd ${{ matrix.project }} && npm audit --audit-level=high
-        continue-on-error: true
 
   rust-audit:
     name: Rust audit – ${{ matrix.project }}
@@ -60,4 +59,3 @@ jobs:
           tool: cargo-audit
       - name: Audit dependencies
         run: cd ${{ matrix.project }} && cargo audit
-        continue-on-error: true
