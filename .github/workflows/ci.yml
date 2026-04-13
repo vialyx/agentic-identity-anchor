@@ -59,6 +59,8 @@ jobs:
         run: cd cli && cargo check
       - name: Clippy cli
         run: cd cli && cargo clippy -- -D warnings
+      - name: Test cli
+        run: cd cli && cargo test
 
   terraform:
     name: Terraform – validate

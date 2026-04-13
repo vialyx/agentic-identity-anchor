@@ -23,7 +23,7 @@ impl ApiClient {
 
     /// Perform a GET request and deserialise the JSON response.
     pub async fn get<T: DeserializeOwned>(&self, path: &str) -> Result<T> {
-        let url = format!("{}{}", self.base_url.trim_end_matches('/'), path);
+        let url = join_url(&self.base_url, path);
         let resp = self
             .inner
             .get(&url)
@@ -36,7 +36,7 @@ impl ApiClient {
 
     /// Perform a POST request with a JSON body and deserialise the JSON response.
     pub async fn post<B: Serialize, T: DeserializeOwned>(&self, path: &str, body: B) -> Result<T> {
-        let url = format!("{}{}", self.base_url.trim_end_matches('/'), path);
+        let url = join_url(&self.base_url, path);
         let resp = self
             .inner
             .post(&url)
@@ -50,7 +50,7 @@ impl ApiClient {
 
     /// Perform a PATCH request with a JSON body and deserialise the JSON response.
     pub async fn patch<B: Serialize, T: DeserializeOwned>(&self, path: &str, body: B) -> Result<T> {
-        let url = format!("{}{}", self.base_url.trim_end_matches('/'), path);
+        let url = join_url(&self.base_url, path);
         let resp = self
             .inner
             .patch(&url)
@@ -90,5 +90,35 @@ impl ApiClient {
         resp.json::<T>()
             .await
             .context("failed to deserialise response")
+    }
+}
+
+fn join_url(base_url: &str, path: &str) -> String {
+    let base = base_url.trim_end_matches('/');
+    if path.starts_with('/') {
+        format!("{base}{path}")
+    } else {
+        format!("{base}/{path}")
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::join_url;
+
+    #[test]
+    fn join_url_handles_leading_slash_path() {
+        assert_eq!(
+            join_url("https://api.example.com/", "/v1/tenants"),
+            "https://api.example.com/v1/tenants"
+        );
+    }
+
+    #[test]
+    fn join_url_handles_path_without_leading_slash() {
+        assert_eq!(
+            join_url("https://api.example.com", "v1/tenants"),
+            "https://api.example.com/v1/tenants"
+        );
     }
 }
