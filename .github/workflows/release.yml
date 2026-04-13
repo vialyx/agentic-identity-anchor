@@ -1,0 +1,127 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  backend-bundle:
+    name: Bundle Lambda ZIP
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: cd backend && npm ci && npm run build
+      - run: cd backend && zip -r ../lambda.zip dist/ node_modules/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: lambda-zip
+          path: lambda.zip
+
+  frontend-bundle:
+    name: Build frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: cd frontend && npm ci && npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+
+  client-linux:
+    name: Build Anchor client (Linux x86_64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: anchor-client
+      - run: cd anchor-client && cargo build --release
+      - name: Package + checksum
+        run: |
+          cp anchor-client/target/release/anchor anchor-linux-x86_64
+          sha256sum anchor-linux-x86_64 > anchor-linux-x86_64.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: client-linux-x86_64
+          path: |
+            anchor-linux-x86_64
+            anchor-linux-x86_64.sha256
+
+  client-macos:
+    name: Build Anchor client (macOS universal)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: anchor-client
+      - name: Build universal binary
+        run: |
+          cd anchor-client
+          cargo build --release --target x86_64-apple-darwin
+          cargo build --release --target aarch64-apple-darwin
+          lipo -create -output ../anchor-macos-universal \
+            target/x86_64-apple-darwin/release/anchor \
+            target/aarch64-apple-darwin/release/anchor
+      - name: Checksum
+        run: shasum -a 256 anchor-macos-universal > anchor-macos-universal.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: client-macos-universal
+          path: |
+            anchor-macos-universal
+            anchor-macos-universal.sha256
+
+  cli-linux:
+    name: Build anchor-ctl (Linux x86_64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: cli
+      - run: cd cli && cargo build --release
+      - name: Package + checksum
+        run: |
+          cp cli/target/release/anchor-ctl anchor-ctl-linux-x86_64
+          sha256sum anchor-ctl-linux-x86_64 > anchor-ctl-linux-x86_64.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cli-linux-x86_64
+          path: |
+            anchor-ctl-linux-x86_64
+            anchor-ctl-linux-x86_64.sha256
+
+  create-release:
+    name: Create GitHub Release
+    needs: [backend-bundle, frontend-bundle, client-linux, client-macos, cli-linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Collect checksums
+        run: find artifacts -name "*.sha256" -exec cat {} \; > SHA256SUMS.txt
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/**/*
+            SHA256SUMS.txt
+          generate_release_notes: true
