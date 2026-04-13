@@ -3,7 +3,10 @@ use clap::{Args, Subcommand};
 use serde::{Deserialize, Serialize};
 use tabled::Tabled;
 
-use crate::{client::ApiClient, output::{print_item, print_table, OutputFormat}};
+use crate::{
+    client::ApiClient,
+    output::{print_item, print_table, OutputFormat},
+};
 
 #[derive(Args)]
 pub struct TenantsArgs {
@@ -17,12 +20,11 @@ enum TenantCmd {
     List,
     /// Create a new tenant
     Create {
-        #[arg(long)] name: String,
+        #[arg(long)]
+        name: String,
     },
     /// Get a tenant by ID
-    Get {
-        tenant_id: String,
-    },
+    Get { tenant_id: String },
 }
 
 #[derive(Debug, Deserialize, Serialize, Tabled)]

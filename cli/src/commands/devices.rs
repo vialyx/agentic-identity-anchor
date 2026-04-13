@@ -3,7 +3,10 @@ use clap::{Args, Subcommand};
 use serde::{Deserialize, Serialize};
 use tabled::Tabled;
 
-use crate::{client::ApiClient, output::{print_item, print_table, OutputFormat}};
+use crate::{
+    client::ApiClient,
+    output::{print_item, print_table, OutputFormat},
+};
 
 #[derive(Args)]
 pub struct DevicesArgs {
@@ -15,19 +18,24 @@ pub struct DevicesArgs {
 enum DeviceCmd {
     /// List devices for a tenant
     List {
-        #[arg(long)] tenant: String,
-        #[arg(long)] group: Option<String>,
-        #[arg(long)] status: Option<String>,
+        #[arg(long)]
+        tenant: String,
+        #[arg(long)]
+        group: Option<String>,
+        #[arg(long)]
+        status: Option<String>,
     },
     /// Get details of a single device
     Get {
         device_id: String,
-        #[arg(long)] tenant: String,
+        #[arg(long)]
+        tenant: String,
     },
     /// Quarantine a device
     Quarantine {
         device_id: String,
-        #[arg(long)] tenant: String,
+        #[arg(long)]
+        tenant: String,
     },
 }
 
@@ -67,7 +75,11 @@ struct DeviceDetail {
 impl DevicesArgs {
     pub async fn run(self, client: &ApiClient, fmt: &OutputFormat) -> Result<()> {
         match self.cmd {
-            DeviceCmd::List { tenant, group, status } => {
+            DeviceCmd::List {
+                tenant,
+                group,
+                status,
+            } => {
                 let mut path = format!("/v1/tenants/{tenant}/devices");
                 let mut sep = '?';
                 if let Some(g) = &group {

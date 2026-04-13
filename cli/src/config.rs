@@ -34,10 +34,11 @@ impl Config {
         let content = std::fs::read_to_string(&config_path)
             .with_context(|| format!("Could not read config file at {}", config_path.display()))?;
 
-        let file: ConfigFile = toml::from_str(&content)
-            .context("Failed to parse config file")?;
+        let file: ConfigFile = toml::from_str(&content).context("Failed to parse config file")?;
 
-        let p = file.profiles.get(profile)
+        let p = file
+            .profiles
+            .get(profile)
             .with_context(|| format!("Profile '{}' not found in config", profile))?;
 
         Ok(Config {

@@ -82,7 +82,8 @@ fn list_returns_all_agents() {
     let mut inv = Inventory::load(dir.path()).unwrap();
 
     for i in 0..5 {
-        inv.upsert(make_agent(&format!("agent-{i}"), "1.0.0")).unwrap();
+        inv.upsert(make_agent(&format!("agent-{i}"), "1.0.0"))
+            .unwrap();
     }
 
     assert_eq!(inv.list().len(), 5);

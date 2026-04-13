@@ -90,7 +90,10 @@ fn ed25519_tampered_file_fails() {
 
     let pubkey_hex = hex::encode(verifying_key.as_bytes());
     let result = verify_file_signature(file.path(), sig_file.path(), &pubkey_hex);
-    assert!(result.is_err(), "Verification should fail for tampered file");
+    assert!(
+        result.is_err(),
+        "Verification should fail for tampered file"
+    );
 }
 
 #[test]

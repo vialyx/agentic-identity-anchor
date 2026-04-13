@@ -34,8 +34,8 @@ impl SelfUpdater {
         // Compare using semver to support pre-release tags properly
         let current = semver::Version::parse(&self.current_version)
             .unwrap_or_else(|_| semver::Version::new(0, 0, 0));
-        let available = semver::Version::parse(&su.version)
-            .context("Parse available version from policy")?;
+        let available =
+            semver::Version::parse(&su.version).context("Parse available version from policy")?;
 
         if available <= current {
             info!(
@@ -45,9 +45,17 @@ impl SelfUpdater {
             return Ok(false);
         }
 
-        info!("Self-update available: {} → {}", self.current_version, su.version);
-        self.apply_update(&su.version, &su.download_url, &su.sha256, su.sig_url.as_deref())
-            .await?;
+        info!(
+            "Self-update available: {} → {}",
+            self.current_version, su.version
+        );
+        self.apply_update(
+            &su.version,
+            &su.download_url,
+            &su.sha256,
+            su.sig_url.as_deref(),
+        )
+        .await?;
         Ok(true)
     }
 
@@ -60,7 +68,11 @@ impl SelfUpdater {
             anyhow::bail!("No .prev binary found for rollback");
         }
 
-        info!("Rolling back: {} → {}", prev.display(), current_exe.display());
+        info!(
+            "Rolling back: {} → {}",
+            prev.display(),
+            current_exe.display()
+        );
         std::fs::rename(&prev, &current_exe).context("Rename .prev to current binary")?;
         info!("Rollback succeeded – please restart the service");
         Ok(())
@@ -118,13 +130,7 @@ async fn replace_binary(staging: &Path, dest: &Path) -> anyhow::Result<()> {
     // On Windows, rename may fail if the target is locked; on Unix it's atomic.
     tokio::fs::rename(staging, dest)
         .await
-        .with_context(|| {
-            format!(
-                "Replace {} with {}",
-                dest.display(),
-                staging.display()
-            )
-        })?;
+        .with_context(|| format!("Replace {} with {}", dest.display(), staging.display()))?;
 
     #[cfg(unix)]
     {

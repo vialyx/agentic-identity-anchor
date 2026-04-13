@@ -95,5 +95,12 @@ fn collect_system_metrics() -> (f32, u64, u64, u64, u64, u64) {
     let disk_available: u64 = disks.iter().map(|d| d.available_space()).sum();
     let disk_used = disk_total.saturating_sub(disk_available);
 
-    (cpu_usage, memory_used, memory_total, disk_used, disk_total, uptime)
+    (
+        cpu_usage,
+        memory_used,
+        memory_total,
+        disk_used,
+        disk_total,
+        uptime,
+    )
 }

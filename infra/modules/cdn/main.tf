@@ -97,8 +97,8 @@ resource "aws_cloudfront_distribution" "main" {
 # Allow CloudFront OAC to read from the frontend S3 bucket
 data "aws_iam_policy_document" "frontend_bucket_policy" {
   statement {
-    sid     = "AllowCloudFrontOAC"
-    actions = ["s3:GetObject"]
+    sid       = "AllowCloudFrontOAC"
+    actions   = ["s3:GetObject"]
     resources = ["${var.frontend_bucket_arn}/*"]
 
     principals {

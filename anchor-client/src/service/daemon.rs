@@ -67,10 +67,7 @@ pub async fn run_daemon(config: Config) -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn agent_sync_loop(
-    manager: Arc<AgentManager>,
-    interval_secs: u64,
-) -> anyhow::Result<()> {
+async fn agent_sync_loop(manager: Arc<AgentManager>, interval_secs: u64) -> anyhow::Result<()> {
     let mut ticker = tokio::time::interval(Duration::from_secs(interval_secs));
     ticker.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
     loop {
@@ -81,10 +78,7 @@ async fn agent_sync_loop(
     }
 }
 
-async fn update_check_loop(
-    updater: Arc<SelfUpdater>,
-    interval: Duration,
-) -> anyhow::Result<()> {
+async fn update_check_loop(updater: Arc<SelfUpdater>, interval: Duration) -> anyhow::Result<()> {
     let mut ticker = tokio::time::interval(interval);
     ticker.set_missed_tick_behavior(tokio::time::MissedTickBehavior::Skip);
     loop {
@@ -108,10 +102,9 @@ async fn shutdown_signal() {
     #[cfg(unix)]
     {
         use tokio::signal::unix::{signal, SignalKind};
-        let mut sigterm = signal(SignalKind::terminate())
-            .expect("Failed to install SIGTERM handler");
-        let mut sigint = signal(SignalKind::interrupt())
-            .expect("Failed to install SIGINT handler");
+        let mut sigterm =
+            signal(SignalKind::terminate()).expect("Failed to install SIGTERM handler");
+        let mut sigint = signal(SignalKind::interrupt()).expect("Failed to install SIGINT handler");
         tokio::select! {
             _ = sigterm.recv() => {}
             _ = sigint.recv() => {}

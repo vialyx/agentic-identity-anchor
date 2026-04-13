@@ -135,7 +135,10 @@ impl AnchorClient {
         arch: &str,
         cert_thumbprint: &str,
     ) -> anyhow::Result<RegisterResponse> {
-        let url = format!("{}/v1/tenants/{}/devices/register", self.base_url, self.tenant_id);
+        let url = format!(
+            "{}/v1/tenants/{}/devices/register",
+            self.base_url, self.tenant_id
+        );
         let body = RegisterRequest {
             tenant_id: self.tenant_id.clone(),
             hostname: hostname.to_string(),
@@ -241,7 +244,10 @@ impl AnchorClient {
             anyhow::bail!("Download returned HTTP {status}");
         }
 
-        let bytes = resp.bytes().await.context("Failed to read response bytes")?;
+        let bytes = resp
+            .bytes()
+            .await
+            .context("Failed to read response bytes")?;
         let mut file = tokio::fs::File::create(dest)
             .await
             .with_context(|| format!("Failed to create file: {}", dest.display()))?;

@@ -38,10 +38,7 @@ async fn main() -> anyhow::Result<()> {
         )
         .init();
 
-    let config_path = cli
-        .config
-        .clone()
-        .unwrap_or_else(Config::default_path);
+    let config_path = cli.config.clone().unwrap_or_else(Config::default_path);
 
     let config = Config::load(&config_path)
         .with_context(|| format!("Load config from {}", config_path.display()))?;

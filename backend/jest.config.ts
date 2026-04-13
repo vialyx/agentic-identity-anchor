@@ -6,20 +6,20 @@ const config: Config = {
   roots: ['<rootDir>/tests'],
   testMatch: ['**/*.test.ts'],
   transform: {
-    '^.+\\.tsx?$': 'ts-jest',
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: {
+          strict: true,
+          esModuleInterop: true,
+        },
+      },
+    ],
   },
   collectCoverageFrom: ['src/**/*.ts'],
   coverageDirectory: 'coverage',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-  },
-  globals: {
-    'ts-jest': {
-      tsconfig: {
-        strict: true,
-        esModuleInterop: true,
-      },
-    },
   },
 };
 

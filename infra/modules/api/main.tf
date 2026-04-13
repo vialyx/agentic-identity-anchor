@@ -1,13 +1,13 @@
 locals {
   env_vars = {
-    TENANTS_TABLE          = var.tenants_table_name
-    DEVICES_TABLE          = var.devices_table_name
-    GROUPS_TABLE           = var.groups_table_name
-    AGENT_VERSIONS_TABLE   = var.agent_versions_table_name
-    DEPLOYMENT_POLICIES_TABLE = var.deployment_policies_table_name
-    NONCES_TABLE           = var.nonces_table_name
-    ARTIFACTS_BUCKET       = var.artifacts_bucket_name
-    HEALTH_QUEUE_URL       = var.health_queue_url
+    TENANTS_TABLE                       = var.tenants_table_name
+    DEVICES_TABLE                       = var.devices_table_name
+    GROUPS_TABLE                        = var.groups_table_name
+    AGENT_VERSIONS_TABLE                = var.agent_versions_table_name
+    DEPLOYMENT_POLICIES_TABLE           = var.deployment_policies_table_name
+    NONCES_TABLE                        = var.nonces_table_name
+    ARTIFACTS_BUCKET                    = var.artifacts_bucket_name
+    HEALTH_QUEUE_URL                    = var.health_queue_url
     AWS_NODEJS_CONNECTION_REUSE_ENABLED = "1"
   }
 
@@ -69,7 +69,7 @@ resource "aws_iam_role" "lambda" {
 
 data "aws_iam_policy_document" "lambda_permissions" {
   statement {
-    sid     = "DynamoDB"
+    sid = "DynamoDB"
     actions = [
       "dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:UpdateItem",
       "dynamodb:DeleteItem", "dynamodb:Query", "dynamodb:Scan",
@@ -97,14 +97,14 @@ data "aws_iam_policy_document" "lambda_permissions" {
   }
 
   statement {
-    sid     = "SQS"
-    actions = ["sqs:SendMessage", "sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes"]
+    sid       = "SQS"
+    actions   = ["sqs:SendMessage", "sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:GetQueueAttributes"]
     resources = [var.health_queue_arn]
   }
 
   statement {
-    sid     = "KMS"
-    actions = ["kms:Decrypt", "kms:GenerateDataKey"]
+    sid       = "KMS"
+    actions   = ["kms:Decrypt", "kms:GenerateDataKey"]
     resources = [var.kms_key_arn]
   }
 
@@ -298,25 +298,25 @@ resource "aws_lambda_permission" "api" {
 locals {
   # Routes: key = "METHOD /path", value = integration key
   cognito_routes = {
-    "GET /v1/tenants"                        = "tenants"
-    "POST /v1/tenants"                       = "tenants"
-    "GET /v1/tenants/{tenantId}"             = "tenants"
-    "GET /v1/groups"                         = "groups"
-    "POST /v1/groups"                        = "groups"
-    "GET /v1/groups/{groupId}"               = "groups"
-    "GET /v1/agents"                         = "agents"
-    "POST /v1/agents"                        = "agents"
-    "GET /v1/agents/{agentId}"               = "agents"
-    "GET /v1/deployments"                    = "deployments"
-    "POST /v1/deployments"                   = "deployments"
-    "GET /v1/deployments/{deploymentId}"     = "deployments"
+    "GET /v1/tenants"                              = "tenants"
+    "POST /v1/tenants"                             = "tenants"
+    "GET /v1/tenants/{tenantId}"                   = "tenants"
+    "GET /v1/groups"                               = "groups"
+    "POST /v1/groups"                              = "groups"
+    "GET /v1/groups/{groupId}"                     = "groups"
+    "GET /v1/agents"                               = "agents"
+    "POST /v1/agents"                              = "agents"
+    "GET /v1/agents/{agentId}"                     = "agents"
+    "GET /v1/deployments"                          = "deployments"
+    "POST /v1/deployments"                         = "deployments"
+    "GET /v1/deployments/{deploymentId}"           = "deployments"
     "POST /v1/deployments/{deploymentId}/rollback" = "deployments"
-    "GET /v1/policy"                         = "policy"
-    "PUT /v1/policy"                         = "policy"
+    "GET /v1/policy"                               = "policy"
+    "PUT /v1/policy"                               = "policy"
   }
 
   mtls_routes = {
-    "POST /v1/devices/register" = "register"
+    "POST /v1/devices/register"  = "register"
     "POST /v1/devices/heartbeat" = "heartbeat"
   }
 }

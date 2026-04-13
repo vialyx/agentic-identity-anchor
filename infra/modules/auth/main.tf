@@ -23,17 +23,17 @@ resource "aws_cognito_user_pool" "main" {
   auto_verified_attributes = ["email"]
 
   schema {
-    name                     = "email"
-    attribute_data_type      = "String"
-    required                 = true
-    mutable                  = true
+    name                = "email"
+    attribute_data_type = "String"
+    required            = true
+    mutable             = true
   }
 
   schema {
-    name                     = "tenantId"
-    attribute_data_type      = "String"
-    required                 = false
-    mutable                  = true
+    name                = "tenantId"
+    attribute_data_type = "String"
+    required            = false
+    mutable             = true
     string_attribute_constraints {
       min_length = 1
       max_length = 256
@@ -41,10 +41,10 @@ resource "aws_cognito_user_pool" "main" {
   }
 
   schema {
-    name                     = "role"
-    attribute_data_type      = "String"
-    required                 = false
-    mutable                  = true
+    name                = "role"
+    attribute_data_type = "String"
+    required            = false
+    mutable             = true
     string_attribute_constraints {
       min_length = 1
       max_length = 32

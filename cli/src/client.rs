@@ -14,7 +14,11 @@ impl ApiClient {
             .use_rustls_tls()
             .build()
             .expect("failed to build HTTP client");
-        Self { inner, base_url, token }
+        Self {
+            inner,
+            base_url,
+            token,
+        }
     }
 
     /// Perform a GET request and deserialise the JSON response.
@@ -83,6 +87,8 @@ impl ApiClient {
             let body = resp.text().await.unwrap_or_default();
             bail!("API error ({status}): {body}");
         }
-        resp.json::<T>().await.context("failed to deserialise response")
+        resp.json::<T>()
+            .await
+            .context("failed to deserialise response")
     }
 }

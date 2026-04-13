@@ -22,8 +22,7 @@ fn load_valid_config() {
         log_level = "info"
     "#;
     let f = write_toml(toml);
-    let cfg = anchor_client_lib::config::Config::load(f.path())
-        .expect("Should parse valid config");
+    let cfg = anchor_client_lib::config::Config::load(f.path()).expect("Should parse valid config");
 
     assert_eq!(cfg.tenant_id, "tenant-abc");
     assert_eq!(cfg.control_plane_url, "https://control.example.com");
@@ -66,7 +65,10 @@ fn missing_required_field_returns_error() {
     "#;
     let f = write_toml(toml);
     let result = anchor_client_lib::config::Config::load(f.path());
-    assert!(result.is_err(), "Should fail when required field is missing");
+    assert!(
+        result.is_err(),
+        "Should fail when required field is missing"
+    );
 }
 
 #[test]

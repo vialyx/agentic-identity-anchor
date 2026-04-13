@@ -38,8 +38,7 @@ pub fn verify_file_signature(
 
 /// Compute the SHA-256 hash of a file and return the lower-case hex string.
 pub fn sha256_file(path: &Path) -> anyhow::Result<String> {
-    let data =
-        std::fs::read(path).with_context(|| format!("Read file: {}", path.display()))?;
+    let data = std::fs::read(path).with_context(|| format!("Read file: {}", path.display()))?;
     let digest = Sha256::digest(&data);
     Ok(hex::encode(digest))
 }

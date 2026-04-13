@@ -17,8 +17,7 @@ pub struct AgentManager {
 
 impl AgentManager {
     pub fn new(config: Config, client: Arc<AnchorClient>) -> anyhow::Result<Self> {
-        let inv = Inventory::load(Path::new(&config.data_dir))
-            .context("Load agent inventory")?;
+        let inv = Inventory::load(Path::new(&config.data_dir)).context("Load agent inventory")?;
         Ok(Self {
             config,
             client,
@@ -86,7 +85,9 @@ impl AgentManager {
         info!("Installing agent {agent_id} v{version}");
 
         let download_path = self.download_path(agent_id, version);
-        self.client.download_artifact(download_url, &download_path).await?;
+        self.client
+            .download_artifact(download_url, &download_path)
+            .await?;
 
         verify::verify_sha256(&download_path, expected_sha256)
             .context("SHA-256 verification failed after download")?;
@@ -101,12 +102,8 @@ impl AgentManager {
                 let pubkey_hex = tokio::fs::read_to_string(&pubkey_path)
                     .await
                     .context("Read public key")?;
-                verify::verify_file_signature(
-                    &download_path,
-                    &sig_path,
-                    pubkey_hex.trim(),
-                )
-                .context("Signature verification failed")?;
+                verify::verify_file_signature(&download_path, &sig_path, pubkey_hex.trim())
+                    .context("Signature verification failed")?;
             } else {
                 warn!("sig_url provided but public_key.hex not found; skipping signature check");
             }
@@ -148,7 +145,10 @@ impl AgentManager {
         };
         self.inventory.lock().await.upsert(agent)?;
 
-        info!("Agent {agent_id} v{version} installed at {}", dest.display());
+        info!(
+            "Agent {agent_id} v{version} installed at {}",
+            dest.display()
+        );
         Ok(())
     }
 
@@ -157,8 +157,7 @@ impl AgentManager {
         info!("Removing agent {agent_id}");
         let install_path = {
             let inv = self.inventory.lock().await;
-            inv.get(agent_id)
-                .map(|a| PathBuf::from(&a.install_path))
+            inv.get(agent_id).map(|a| PathBuf::from(&a.install_path))
         };
 
         if let Some(path) = install_path {

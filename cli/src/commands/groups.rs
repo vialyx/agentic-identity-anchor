@@ -3,7 +3,10 @@ use clap::{Args, Subcommand};
 use serde::{Deserialize, Serialize};
 use tabled::Tabled;
 
-use crate::{client::ApiClient, output::{print_item, print_table, OutputFormat}};
+use crate::{
+    client::ApiClient,
+    output::{print_item, print_table, OutputFormat},
+};
 
 #[derive(Args)]
 pub struct GroupsArgs {
@@ -15,13 +18,17 @@ pub struct GroupsArgs {
 enum GroupCmd {
     /// List groups for a tenant
     List {
-        #[arg(long)] tenant: String,
+        #[arg(long)]
+        tenant: String,
     },
     /// Create a new group
     Create {
-        #[arg(long)] tenant: String,
-        #[arg(long)] name: String,
-        #[arg(long)] description: Option<String>,
+        #[arg(long)]
+        tenant: String,
+        #[arg(long)]
+        name: String,
+        #[arg(long)]
+        description: Option<String>,
     },
 }
 
@@ -45,13 +52,18 @@ impl GroupsArgs {
                     client.get(&format!("/v1/tenants/{tenant}/groups")).await?;
                 print_table(&items, fmt);
             }
-            GroupCmd::Create { tenant, name, description } => {
+            GroupCmd::Create {
+                tenant,
+                name,
+                description,
+            } => {
                 let body = serde_json::json!({
                     "name": name,
                     "description": description.unwrap_or_default()
                 });
-                let item: GroupRow =
-                    client.post(&format!("/v1/tenants/{tenant}/groups"), body).await?;
+                let item: GroupRow = client
+                    .post(&format!("/v1/tenants/{tenant}/groups"), body)
+                    .await?;
                 println!("Created group: {}", item.group_id);
                 print_item(&item, fmt);
             }
