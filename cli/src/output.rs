@@ -40,9 +40,8 @@ pub fn print_item<T: Serialize>(item: &T, format: &OutputFormat) {
                         [k, v_str]
                     })
                     .collect();
-                let table = tabled::builder::Builder::from_iter(rows)
-                    .build()
-                    .with(tabled::settings::Style::rounded());
+                let mut table = tabled::builder::Builder::from_iter(rows).build();
+                table.with(tabled::settings::Style::rounded());
                 println!("{table}");
             } else {
                 println!("{}", serde_json::to_string_pretty(item).unwrap_or_default());

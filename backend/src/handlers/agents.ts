@@ -87,7 +87,7 @@ export const listHandler = async (
   const { agentId, platform, arch, stable, limit, nextToken } = queryParsed.data;
 
   try {
-    let filterParts: string[] = [];
+    const filterParts: string[] = [];
     const exprNames: Record<string, string> = {};
     const exprValues: Record<string, unknown> = {};
 
