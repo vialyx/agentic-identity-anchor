@@ -101,7 +101,8 @@ token = "abc123"
 "#,
         );
 
-        let err = Config::load_from_path("prod", &path).expect_err("expected missing profile error");
+        let err =
+            Config::load_from_path("prod", &path).expect_err("expected missing profile error");
         let msg = format!("{err:#}");
         assert!(msg.contains("Profile 'prod' not found"));
 
