@@ -5,7 +5,7 @@ output "api_endpoint" {
 
 output "cloudfront_domain" {
   description = "CloudFront distribution domain name"
-  value       = module.cdn.cloudfront_domain
+  value       = module.cdn.distribution_domain
 }
 
 output "cognito_user_pool_id" {
