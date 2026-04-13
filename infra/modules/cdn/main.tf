@@ -16,14 +16,14 @@ resource "aws_cloudfront_distribution" "main" {
   # S3 frontend origin (default)
   origin {
     origin_id                = "s3-frontend"
-    domain_name              = var.frontend_bucket_domain
+    domain_name              = var.frontend_bucket_regional_domain
     origin_access_control_id = aws_cloudfront_origin_access_control.frontend.id
   }
 
   # API Gateway origin
   origin {
     origin_id   = "api-gateway"
-    domain_name = var.api_endpoint_host
+    domain_name = var.api_endpoint
 
     custom_origin_config {
       http_port              = 80

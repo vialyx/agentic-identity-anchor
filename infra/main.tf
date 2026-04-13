@@ -56,6 +56,6 @@ module "cdn" {
   environment           = var.environment
   frontend_bucket_id    = module.storage.frontend_bucket_id
   frontend_bucket_arn   = module.storage.frontend_bucket_arn
-  frontend_bucket_domain = module.storage.frontend_bucket_domain
-  api_endpoint_host     = module.api.api_endpoint_host
+  frontend_bucket_regional_domain = module.storage.frontend_bucket_domain
+  api_endpoint                  = module.api.api_endpoint_host
 }
