@@ -3,7 +3,7 @@ name = "anchor-client"
 version = "0.1.0"
 edition = "2021"
 description = "Anchor cross-platform daemon – root-of-trust runtime agent"
-license = "MIT"
+license = "Apache-2.0"
 
 [lib]
 name = "anchor_client_lib"
